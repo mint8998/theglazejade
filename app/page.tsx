@@ -2,105 +2,98 @@
 import React, { useState } from 'react';
 
 export default function Home() {
+  // --- States สำหรับระบบต่างๆ ---
+  const [cartCount, setCartCount] = useState(0);
+  const [showLogin, setShowLogin] = useState(false);
+  const [customerName, setCustomerName] = useState('');
+  const [points, setPoints] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
   const [u, setU] = useState('');
   const [p, setP] = useState('');
 
-  // ฟังก์ชันเช็ค Admin (User: admin / Pass: 12345678)
-  const handleAdminLogin = () => {
-    if (u === 'admin' && p === '12345678') {
-      setIsAdmin(true);
-    } else {
-      alert('รหัสผ่านไม่ถูกต้องครับ');
-    }
+  // ฟังก์ชันกดสั่งซื้อแล้วเพิ่มเลขในตะกร้า
+  const addToCart = () => {
+    setCartCount(cartCount + 1);
+    alert("เพิ่มลงตะกร้าเรียบร้อย! อย่าลืมกดสั่งซื้อเพื่อรับแต้ม");
   };
 
-  // --- หน้าจอสำหรับแอดมิน ---
+  // ฟังก์ชันเช็ค Admin (user: admin / pass: 12345678)
+  const checkAdmin = () => {
+    if (u === 'admin' && p === '12345678') setIsAdmin(true);
+    else alert('รหัสผ่านแอดมินไม่ถูกต้อง');
+  };
+
   if (isAdmin) {
     return (
-      {/* แถบเมนูไอคอนด้านบนสุด */}
-<div style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px', padding: '10px 20px', fontSize: '24px' }}>
-  <span style={{ cursor: 'pointer' }}>👤</span>
-  <span style={{ cursor: 'pointer' }}>🛒 <small style={{ fontSize: '12px' }}>0</small></span>
-  <span style={{ cursor: 'pointer' }}>🤍 <small style={{ fontSize: '12px' }}>0</small></span>
-  <span style={{ cursor: 'pointer' }}>🎧</span>
-  <span style={{ cursor: 'pointer' }}>🌐</span>
-</div>
-      <div style={{ padding: '40px', fontFamily: 'sans-serif', backgroundColor: '#fff' }}>
-        <h1 style={{ color: '#d63384' }}>Dashboard แอดมิน - GLAZED JADE</h1>
-        <div style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '10px' }}>
-          <h3>รายการสั่งซื้อทั้งหมด</h3>
-          <p>แอดมินสามารถดูข้อมูลการเลือกทรงเล็บ รูปภาพ และที่อยู่จัดส่งของลูกค้าได้ที่นี่</p>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <tr style={{ backgroundColor: '#fce4ec', textAlign: 'left' }}>
-              <th style={{ padding: '10px' }}>ลูกค้า</th>
-              <th style={{ padding: '10px' }}>สเปคเล็บ</th>
-              <th style={{ padding: '10px' }}>สถานะการชำระเงิน</th>
-            </tr>
-            <tr>
-              <td style={{ padding: '10px' }}>คุณมินท์ (ตัวอย่าง)</td>
-              <td style={{ padding: '10px' }}>ทรง Square / ยาวพิเศษ / มีรูปแบบที่อัปโหลด</td>
-              <td style={{ padding: '10px', color: 'green' }}>จ่ายแล้ว (พร้อมเพย์)</td>
-            </tr>
-          </table>
+      <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
+        <h1 style={{ color: '#d63384' }}>Admin Dashboard (เชื่อมต่อ Excel)</h1>
+        <p>ดึงข้อมูลจาก Google Sheets เพื่อดูออเดอร์ล่าสุด</p>
+        <div style={{ border: '2px solid #eee', padding: '15px' }}>
+          <p><b>รายการล่าสุด:</b> ทรง Oval / ที่อยู่: จันทบุรี / รูปภาพ: [Link]</p>
         </div>
-        <button onClick={() => setIsAdmin(false)} style={{ marginTop: '20px', padding: '10px' }}>กลับหน้าสั่งซื้อ</button>
+        <button onClick={() => setIsAdmin(false)} style={{ marginTop: '20px' }}>กลับหน้าแรก</button>
       </div>
     );
   }
 
-  // --- หน้าจอสำหรับลูกค้า (GLAZED JADE) ---
   return (
-    <div style={{ padding: '20px', backgroundColor: '#fff5f7', minHeight: '100vh', fontFamily: 'sans-serif' }}>
-      <header style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <h1 style={{ color: '#d63384', fontSize: '48px', margin: '0' }}>💅 GLAZED JADE</h1>
-        <p style={{ fontSize: '18px', color: '#666' }}>สั่งทำเล็บปลอมแบบ Custom พร้อมระบบสะสมแต้มหลังใช้งาน</p>
-      </header>
-
-      <div style={{ maxWidth: '600px', margin: 'auto', backgroundColor: 'white', padding: '30px', borderRadius: '25px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
-        <div style={{ marginBottom: '20px' }}>
-          <h3>1. เลือกรูปแบบเล็บ</h3>
-          <select style={{ width: '100%', padding: '12px', marginBottom: '10px', borderRadius: '10px', border: '1px solid #ddd' }}>
-            <option>เลือกทรงเล็บ: Square / Oval / Almond / Coffin</option>
-            <option>Square</option>
-            <option>Oval</option>
-            <option>Almond</option>
-            <option>Coffin</option>
-          </select>
-          <select style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #ddd' }}>
-            <option>เลือกความยาว: สั้น / กลาง / ยาวพิเศษ</option>
-            <option>สั้น</option>
-            <option>กลาง</option>
-            <option>ยาวพิเศษ</option>
-          </select>
-        </div>
-
-        <div style={{ marginBottom: '20px' }}>
-          <h3>2. เพิ่มรูปแบบเล็บที่ต้องการ (อัปโหลดรูปเอง)</h3>
-          <input type="file" accept="image/*" style={{ padding: '10px', width: '100%', border: '1px dashed #d63384', borderRadius: '10px' }} />
-        </div>
-
-        <div style={{ marginBottom: '20px' }}>
-          <h3>3. ข้อมูลจัดส่ง</h3>
-          <textarea placeholder="กรอกชื่อผู้รับ เบอร์โทร และที่อยู่จัดส่งอย่างละเอียด" style={{ width: '100%', height: '100px', padding: '15px', borderRadius: '10px', border: '1px solid #ddd' }}></textarea>
-        </div>
-
-        <div style={{ textAlign: 'center', backgroundColor: '#fff0f6', padding: '20px', borderRadius: '20px', border: '2px dashed #d63384' }}>
-          <p style={{ fontWeight: 'bold' }}>ชำระเงินผ่านพร้อมเพย์</p>
-          {/* ส่วนแสดง QR Code พร้อมเพย์ */}
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=PROMPTPAY" alt="QR Code" style={{ width: '150px', marginBottom: '10px' }} />
-          <p style={{ fontSize: '14px', color: '#d63384' }}>สแกนเพื่อจ่ายเงินและรับแต้มสะสมทันที!</p>
-          <button style={{ width: '100%', backgroundColor: '#d63384', color: 'white', border: 'none', padding: '15px', borderRadius: '30px', fontSize: '20px', fontWeight: 'bold', cursor: 'pointer' }}>
-            ยืนยันการสั่งซื้อ
-          </button>
-        </div>
+    <div style={{ padding: '10px', backgroundColor: '#fff5f7', minHeight: '100vh', fontFamily: 'sans-serif' }}>
+      
+      {/* ส่วนที่ 1: แถบไอคอนด้านบน (Header Icons) */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px', padding: '10px', fontSize: '24px' }}>
+        <span onClick={() => setShowLogin(true)} style={{ cursor: 'pointer' }}>👤</span>
+        <span style={{ cursor: 'pointer' }}>🛒 <small style={{ fontSize: '14px', color: 'red' }}>{cartCount}</small></span>
+        <span style={{ cursor: 'pointer' }}>🤍</span>
+        <span style={{ cursor: 'pointer' }}>🎧</span>
+        <span style={{ cursor: 'pointer' }}>🌐</span>
       </div>
 
-      <footer style={{ marginTop: '50px', textAlign: 'center', opacity: 0.6 }}>
-        <p style={{ fontSize: '12px' }}>พื้นที่สำหรับแอดมิน</p>
-        <input placeholder="User" onChange={(e) => setU(e.target.value)} style={{ width: '80px', marginRight: '5px', padding: '5px' }} />
-        <input type="password" placeholder="Pass" onChange={(e) => setP(e.target.value)} style={{ width: '80px', marginRight: '5px', padding: '5px' }} />
-        <button onClick={handleAdminLogin} style={{ padding: '5px 15px', cursor: 'pointer' }}>เข้าสู่ระบบ</button>
+      {/* หน้าเด้ง Login (Modal) */}
+      {showLogin && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
+          <div style={{ backgroundColor: 'white', padding: '30px', borderRadius: '20px', textAlign: 'center' }}>
+            <h2>เข้าสู่ระบบเพื่อสะสมแต้ม</h2>
+            <input 
+              placeholder="กรอกชื่อของคุณ" 
+              onChange={(e) => setCustomerName(e.target.value)}
+              style={{ padding: '10px', width: '200px', marginBottom: '10px' }} 
+            />
+            <br />
+            <button onClick={() => { setShowLogin(false); setPoints(10); }} style={{ backgroundColor: '#d63384', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '10px' }}>
+              ตกลง (รับ 10 แต้มฟรี)
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ส่วนที่ 2: เนื้อหาหลัก */}
+      <header style={{ textAlign: 'center', marginBottom: '20px' }}>
+        <h1 style={{ color: '#d63384', fontSize: '32px' }}>💅 GLAZED JADE</h1>
+        {customerName && <p>สวัสดีคุณ: <b>{customerName}</b> | แต้มสะสม: <b style={{ color: '#d63384' }}>{points}</b></p>}
+      </header>
+
+      <div style={{ maxWidth: '500px', margin: 'auto', backgroundColor: 'white', padding: '20px', borderRadius: '20px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
+        <h3>สั่งทำเล็บปลอม</h3>
+        <select style={{ width: '100%', padding: '10px', marginBottom: '10px' }}>
+          <option>เลือกทรงเล็บ</option><option>Square</option><option>Oval</option>
+        </select>
+        <input type="file" style={{ marginBottom: '15px' }} />
+        <textarea placeholder="ที่อยู่จัดส่ง" style={{ width: '100%', height: '60px', marginBottom: '15px' }}></textarea>
+        
+        <button 
+          onClick={addToCart}
+          style={{ width: '100%', backgroundColor: '#d63384', color: 'white', padding: '15px', border: 'none', borderRadius: '30px', fontWeight: 'bold' }}
+        >
+          ใส่ตะกร้า / สั่งซื้อ
+        </button>
+      </div>
+
+      {/* ส่วนที่ 3: แอดมินล็อกอิน */}
+      <footer style={{ marginTop: '50px', textAlign: 'center', opacity: 0.5 }}>
+        <p style={{ fontSize: '12px' }}>Admin Area</p>
+        <input placeholder="User" onChange={e => setU(e.target.value)} style={{ width: '80px' }} />
+        <input type="password" placeholder="Pass" onChange={e => setP(e.target.value)} style={{ width: '80px' }} />
+        <button onClick={checkAdmin}>Login</button>
       </footer>
     </div>
   );
