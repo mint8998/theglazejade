@@ -1,106 +1,138 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-export default function Home() {
-  const [view, setView] = useState('login'); 
-  const [cartCount, setCartCount] = useState(0);
-  const [customerName, setCustomerName] = useState('');
+export default function NailShop() {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState({ username: '', points: 0 });
+  const [cart, setCart] = useState([]);
+  const [adminU, setAdminU] = useState('');
+  const [adminP, setAdminP] = useState('');
   
-  const [u, setU] = useState('');
-  const [p, setP] = useState('');
+  // สถานะสำหรับการค้นหาของแอดมิน
+  const [searchStart, setSearchStart] = useState('');
+  const [searchEnd, setSearchEnd] = useState('');
 
-  // สีที่คุณเลือก (HEX Codes)
-  const colors = {
-    primary: '#9CAF88',   // Sage Green
-    base: '#F5F5DC',      // Cream White
-    accent: '#8B8589',    // Warm Gray
-    highlight: '#C5A059', // Soft Gold
+  const nailShapes = [
+    "ทรงเหลี่ยม (Square)", "ทรงมน (Oval)", "ทรงบัลเลต์ (Coffin)", 
+    "พส.เวียดนาม (ปลายแหลมเฉี่ยว)", "พส.จีน (ทรงเหลี่ยมหรู/ติดอะไหล่)"
+  ];
+
+  // ฟังก์ชันเพิ่มของลงตะกร้า
+  const addToCart = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const newItem = {
+      id: Date.now(),
+      shape: formData.get('shape'),
+      length: formData.get('length'),
+      address: formData.get('address'),
+      image: "รูปลายเล็บที่อัปโหลด",
+      date: new Date().toISOString().split('T')[0]
+    };
+    setCart([...cart, newItem]);
+    alert('เพิ่มลงตะกร้าแล้ว!');
+    e.target.reset();
   };
 
-  const handleLogin = () => {
-    if (u === 'admin' && p === '12345678') setView('admin');
-    else if (u !== "" && p !== "") { setCustomerName(u); setView('shop'); }
-    else alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+  // ฟังก์ชันลบสินค้าในตะกร้า
+  const removeFromCart = (id) => {
+    setCart(cart.filter(item => item.id !== id));
   };
 
-  // --- 1. หน้า Login ---
-  if (view === 'login') {
+  // เช็คระบบแอดมิน (admin / 12345678)
+  const handleAdminLogin = () => {
+    if (adminU === 'admin' && adminP === '12345678') setIsAdmin(true);
+    else alert('รหัสแอดมินไม่ถูกต้อง');
+  };
+
+  if (isAdmin) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: colors.base, fontFamily: 'sans-serif' }}>
-        <h1 style={{ color: colors.primary, fontSize: '42px', marginBottom: '20px', letterSpacing: '2px' }}>GLAZED JADE</h1>
-        <div style={{ backgroundColor: 'white', padding: '40px', borderRadius: '15px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', width: '320px', textAlign: 'center', borderTop: `5px solid ${colors.highlight}` }}>
-          <h2 style={{ color: colors.accent, marginBottom: '20px' }}>เข้าสู่ระบบ</h2>
-          <input placeholder="ชื่อผู้ใช้" onChange={(e) => setU(e.target.value)} style={{ width: '100%', padding: '12px', marginBottom: '15px', borderRadius: '8px', border: `1px solid ${colors.primary}44`, outline: 'none' }} />
-          <input type="password" placeholder="รหัสผ่าน" onChange={(e) => setP(e.target.value)} style={{ width: '100%', padding: '12px', marginBottom: '25px', borderRadius: '8px', border: `1px solid ${colors.primary}44`, outline: 'none' }} />
-          <button onClick={handleLogin} style={{ width: '100%', backgroundColor: colors.primary, color: 'white', padding: '12px', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', transition: '0.3s' }}>LOGIN</button>
-          <p style={{ marginTop: '20px', fontSize: '14px', color: colors.accent }}>ยังไม่มีบัญชี? <span onClick={() => setView('register')} style={{ color: colors.highlight, cursor: 'pointer', fontWeight: 'bold' }}>สมัครสมาชิก</span></p>
+      <div style={{ padding: '20px', fontFamily: 'sans-serif', backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
+        <h2 style={{ color: '#d63384' }}>ระบบจัดการหลังบ้าน (Admin)</h2>
+        <div style={{ background: 'white', padding: '15px', borderRadius: '10px', marginBottom: '20px' }}>
+          <h4>🔍 ดูคำสั่งซื้อตามช่วงวันที่</h4>
+          <input type="date" onChange={(e) => setSearchStart(e.target.value)} /> ถึง <input type="date" onChange={(e) => setSearchEnd(e.target.value)} />
+          <button style={{ marginLeft: '10px' }}>ค้นหาออเดอร์</button>
+        </div>
+        <div style={{ background: 'white', padding: '15px', borderRadius: '10px' }}>
+          <h4>รายการคำสั่งซื้อทั้งหมด</h4>
+          <table border="1" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <thead style={{ background: '#eee' }}>
+              <tr><th>วันที่</th><th>Account</th><th>ทรงเล็บ</th><th>ที่อยู่</th><th>สถานะ</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>2024-03-20</td><td>User_01</td><td>พส.เวียดนาม</td><td>ชลบุรี...</td><td>รอตรวจสลิปพร้อมเพย์</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <button onClick={() => setIsAdmin(false)} style={{ marginTop: '20px' }}>กลับหน้าหลัก</button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ padding: '20px', backgroundColor: '#fff5f7', minHeight: '100vh', fontFamily: 'sans-serif' }}>
+      <header style={{ textAlign: 'center', marginBottom: '20px' }}>
+        <h1 style={{ color: '#d63384' }}>💅 GLAZED JADE</h1>
+        <p>สั่งทำเล็บปลอมพส.จีน-เวียดนาม พร้อมระบบสะสมแต้ม</p>
+      </header>
+
+      <div style={{ maxWidth: '600px', margin: 'auto' }}>
+        {/* ส่วนฟอร์มสั่งทำ */}
+        <div style={{ background: 'white', padding: '20px', borderRadius: '15px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+          <h3>✨ ออกแบบเล็บของคุณ</h3>
+          <form onSubmit={addToCart}>
+            <label>เลือกทรงเล็บ:</label>
+            <select name="shape" style={{ width: '100%', padding: '10px', marginBottom: '15px' }}>
+              {nailShapes.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+
+            <label>ความยาว:</label>
+            <select name="length" style={{ width: '100%', padding: '10px', marginBottom: '15px' }}>
+              <option>สั้น</option><option>กลาง</option><option>ยาว</option>
+            </select>
+
+            <label>อัปโหลดรูปลายที่ต้องการ:</label>
+            <input type="file" style={{ marginBottom: '15px' }} />
+
+            <label>ที่อยู่จัดส่ง:</label>
+            <textarea name="address" required style={{ width: '100%', height: '60px', padding: '10px', marginBottom: '15px' }} placeholder="กรอกที่อยู่รับของ..."></textarea>
+
+            <button type="submit" style={{ width: '100%', padding: '12px', background: '#d63384', color: 'white', border: 'none', borderRadius: '25px', cursor: 'pointer', fontWeight: 'bold' }}>
+              เพิ่มลงตะกร้า 🛒
+            </button>
+          </form>
+        </div>
+
+        {/* ส่วนตะกร้าสินค้า */}
+        <div style={{ background: 'white', padding: '20px', borderRadius: '15px', marginTop: '20px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+          <h3>🛒 ตะกร้าสินค้าของคุณ</h3>
+          {cart.length === 0 ? <p>ยังไม่มีสินค้าในตะกร้า</p> : cart.map(item => (
+            <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #eee' }}>
+              <div>
+                <strong>{item.shape}</strong> ({item.length})<br/>
+                <small>วันที่สั่ง: {item.date}</small>
+              </div>
+              <button onClick={() => removeFromCart(item.id)} style={{ color: 'red', border: 'none', background: 'none', cursor: 'pointer' }}>ลบ 🗑️</button>
+            </div>
+          ))}
+          {cart.length > 0 && (
+            <div style={{ marginTop: '20px', textAlign: 'center', borderTop: '2px solid #fce4ec', paddingTop: '15px' }}>
+              <p>ยอดชำระผ่าน <b>พร้อมเพย์</b></p>
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=PROMPTPAY" alt="QR" style={{ width: '120px' }} />
+              <button style={{ width: '100%', padding: '15px', background: '#28a745', color: 'white', border: 'none', borderRadius: '25px', marginTop: '10px', fontWeight: 'bold' }}>ชำระเงินและรับแต้มสะสม</button>
+            </div>
+          )}
         </div>
       </div>
-    );
-  }
 
-  // --- 2. หน้า Register ---
-  if (view === 'register') {
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: colors.base, fontFamily: 'sans-serif' }}>
-        <div style={{ backgroundColor: 'white', padding: '40px', borderRadius: '15px', width: '320px', textAlign: 'center', borderTop: `5px solid ${colors.primary}` }}>
-          <h2 style={{ color: colors.accent }}>สมัครสมาชิก</h2>
-          <input placeholder="ชื่อ-นามสกุล" style={{ width: '100%', padding: '12px', marginBottom: '10px', borderRadius: '8px', border: `1px solid ${colors.accent}44` }} />
-          <input type="password" placeholder="ตั้งรหัสผ่าน" style={{ width: '100%', padding: '12px', marginBottom: '20px', borderRadius: '8px', border: `1px solid ${colors.accent}44` }} />
-          <button onClick={() => setView('login')} style={{ width: '100%', backgroundColor: colors.highlight, color: 'white', padding: '12px', border: 'none', borderRadius: '8px', fontWeight: 'bold' }}>ยืนยันสมัครสมาชิก</button>
-          <p onClick={() => setView('login')} style={{ marginTop: '15px', cursor: 'pointer', color: colors.accent }}>ย้อนกลับ</p>
-        </div>
-      </div>
-    );
-  }
-
-  // --- 3. หน้า Shop ---
-  if (view === 'shop') {
-    return (
-      <div style={{ backgroundColor: colors.base, minHeight: '100vh', fontFamily: 'sans-serif' }}>
-        <nav style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px', padding: '20px', fontSize: '24px', color: colors.accent }}>
-          <span style={{ cursor: 'pointer', position: 'relative' }}>🛒 <small style={{ position: 'absolute', top: '-5px', right: '-10px', backgroundColor: colors.highlight, color: 'white', borderRadius: '50%', padding: '2px 6px', fontSize: '12px' }}>{cartCount}</small></span>
-          <span onClick={() => setView('login')} style={{ cursor: 'pointer' }}>🚪</span>
-        </nav>
-
-        <header style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <h1 style={{ color: colors.primary, fontSize: '36px', margin: '0' }}>GLAZED JADE</h1>
-          <p style={{ color: colors.accent }}>คุณ: <b style={{ color: colors.highlight }}>{customerName}</b> | สะสม 10 แต้ม</p>
-        </header>
-
-        <main style={{ maxWidth: '500px', margin: 'auto', backgroundColor: 'white', padding: '30px', borderRadius: '20px', boxShadow: '0 5px 15px rgba(0,0,0,0.05)' }}>
-          <h3 style={{ color: colors.primary, borderLeft: `4px solid ${colors.highlight}`, paddingLeft: '10px' }}>ออกแบบเล็บของคุณ</h3>
-          <select style={{ width: '100%', padding: '12px', margin: '15px 0', borderRadius: '8px', border: `1px solid ${colors.accent}44` }}>
-            <option>เลือกทรงเล็บ (Square / Oval / Almond)</option>
-          </select>
-          <div style={{ border: `2px dashed ${colors.primary}`, padding: '20px', textAlign: 'center', marginBottom: '20px', borderRadius: '10px' }}>
-            <input type="file" />
-            <p style={{ fontSize: '12px', color: colors.accent, marginTop: '5px' }}>อัปโหลดลายเล็บที่ต้องการ</p>
-          </div>
-          <textarea placeholder="ที่อยู่จัดส่ง" style={{ width: '100%', height: '80px', padding: '12px', borderRadius: '8px', border: `1px solid ${colors.accent}44`, marginBottom: '20px' }}></textarea>
-          <button onClick={() => setCartCount(cartCount + 1)} style={{ width: '100%', backgroundColor: colors.primary, color: 'white', padding: '15px', border: 'none', borderRadius: '30px', fontWeight: 'bold', fontSize: '18px', cursor: 'pointer' }}>
-            เพิ่มลงตะกร้า / สั่งทำ
-          </button>
-        </main>
-      </div>
-    );
-  }
-
-  // --- 4. หน้า Admin ---
-  if (view === 'admin') {
-    return (
-      <div style={{ padding: '40px', backgroundColor: 'white', minHeight: '100vh', fontFamily: 'sans-serif' }}>
-        <h1 style={{ color: colors.primary }}>Admin Management</h1>
-        <div style={{ padding: '20px', backgroundColor: colors.base, borderRadius: '10px' }}>
-          <p style={{ color: colors.accent }}>ระบบดึงข้อมูลจาก Excel (Google Sheets) อัตโนมัติ</p>
-          <div style={{ backgroundColor: 'white', padding: '15px', borderRadius: '8px', borderLeft: `5px solid ${colors.highlight}` }}>
-            <p><b>ลูกค้าล่าสุด:</b> คุณ {u} | <b>ทรงเล็บ:</b> Square | <b>สถานะ:</b> รอตรวจสอบสลิป</p>
-          </div>
-        </div>
-        <button onClick={() => setView('login')} style={{ marginTop: '20px', backgroundColor: colors.accent, color: 'white', padding: '10px 20px', border: 'none', borderRadius: '5px' }}>ออกจากระบบ</button>
-      </div>
-    );
-  }
-
-  return null;
+      <footer style={{ marginTop: '50px', textAlign: 'center', opacity: 0.5 }}>
+        <p>พื้นที่แอดมิน (ดูออเดอร์ย้อนหลัง)</p>
+        <input placeholder="User" onChange={e => setAdminU(e.target.value)} style={{ width: '80px', marginRight: '5px' }} />
+        <input type="password" placeholder="Pass" onChange={e => setAdminP(e.target.value)} style={{ width: '80px', marginRight: '5px' }} />
+        <button onClick={handleAdminLogin}>Login Admin</button>
+      </footer>
+    </div>
+  );
 }
