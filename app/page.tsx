@@ -54,4 +54,53 @@ export default function Home() {
     );
   }
 
-  // --- 3.
+  // --- 3. หน้า Shop ---
+  if (view === 'shop') {
+    return (
+      <div style={{ backgroundColor: colors.base, minHeight: '100vh', fontFamily: 'sans-serif' }}>
+        <nav style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px', padding: '20px', fontSize: '24px', color: colors.accent }}>
+          <span style={{ cursor: 'pointer', position: 'relative' }}>🛒 <small style={{ position: 'absolute', top: '-5px', right: '-10px', backgroundColor: colors.highlight, color: 'white', borderRadius: '50%', padding: '2px 6px', fontSize: '12px' }}>{cartCount}</small></span>
+          <span onClick={() => setView('login')} style={{ cursor: 'pointer' }}>🚪</span>
+        </nav>
+
+        <header style={{ textAlign: 'center', marginBottom: '40px' }}>
+          <h1 style={{ color: colors.primary, fontSize: '36px', margin: '0' }}>GLAZED JADE</h1>
+          <p style={{ color: colors.accent }}>คุณ: <b style={{ color: colors.highlight }}>{customerName}</b> | สะสม 10 แต้ม</p>
+        </header>
+
+        <main style={{ maxWidth: '500px', margin: 'auto', backgroundColor: 'white', padding: '30px', borderRadius: '20px', boxShadow: '0 5px 15px rgba(0,0,0,0.05)' }}>
+          <h3 style={{ color: colors.primary, borderLeft: `4px solid ${colors.highlight}`, paddingLeft: '10px' }}>ออกแบบเล็บของคุณ</h3>
+          <select style={{ width: '100%', padding: '12px', margin: '15px 0', borderRadius: '8px', border: `1px solid ${colors.accent}44` }}>
+            <option>เลือกทรงเล็บ (Square / Oval / Almond)</option>
+          </select>
+          <div style={{ border: `2px dashed ${colors.primary}`, padding: '20px', textAlign: 'center', marginBottom: '20px', borderRadius: '10px' }}>
+            <input type="file" />
+            <p style={{ fontSize: '12px', color: colors.accent, marginTop: '5px' }}>อัปโหลดลายเล็บที่ต้องการ</p>
+          </div>
+          <textarea placeholder="ที่อยู่จัดส่ง" style={{ width: '100%', height: '80px', padding: '12px', borderRadius: '8px', border: `1px solid ${colors.accent}44`, marginBottom: '20px' }}></textarea>
+          <button onClick={() => setCartCount(cartCount + 1)} style={{ width: '100%', backgroundColor: colors.primary, color: 'white', padding: '15px', border: 'none', borderRadius: '30px', fontWeight: 'bold', fontSize: '18px', cursor: 'pointer' }}>
+            เพิ่มลงตะกร้า / สั่งทำ
+          </button>
+        </main>
+      </div>
+    );
+  }
+
+  // --- 4. หน้า Admin ---
+  if (view === 'admin') {
+    return (
+      <div style={{ padding: '40px', backgroundColor: 'white', minHeight: '100vh', fontFamily: 'sans-serif' }}>
+        <h1 style={{ color: colors.primary }}>Admin Management</h1>
+        <div style={{ padding: '20px', backgroundColor: colors.base, borderRadius: '10px' }}>
+          <p style={{ color: colors.accent }}>ระบบดึงข้อมูลจาก Excel (Google Sheets) อัตโนมัติ</p>
+          <div style={{ backgroundColor: 'white', padding: '15px', borderRadius: '8px', borderLeft: `5px solid ${colors.highlight}` }}>
+            <p><b>ลูกค้าล่าสุด:</b> คุณ {u} | <b>ทรงเล็บ:</b> Square | <b>สถานะ:</b> รอตรวจสอบสลิป</p>
+          </div>
+        </div>
+        <button onClick={() => setView('login')} style={{ marginTop: '20px', backgroundColor: colors.accent, color: 'white', padding: '10px 20px', border: 'none', borderRadius: '5px' }}>ออกจากระบบ</button>
+      </div>
+    );
+  }
+
+  return null;
+}
