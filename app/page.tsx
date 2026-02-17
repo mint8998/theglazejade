@@ -18,6 +18,14 @@ export default function Home() {
   // --- หน้าจอสำหรับแอดมิน ---
   if (isAdmin) {
     return (
+      {/* แถบเมนูไอคอนด้านบนสุด */}
+<div style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px', padding: '10px 20px', fontSize: '24px' }}>
+  <span style={{ cursor: 'pointer' }}>👤</span>
+  <span style={{ cursor: 'pointer' }}>🛒 <small style={{ fontSize: '12px' }}>0</small></span>
+  <span style={{ cursor: 'pointer' }}>🤍 <small style={{ fontSize: '12px' }}>0</small></span>
+  <span style={{ cursor: 'pointer' }}>🎧</span>
+  <span style={{ cursor: 'pointer' }}>🌐</span>
+</div>
       <div style={{ padding: '40px', fontFamily: 'sans-serif', backgroundColor: '#fff' }}>
         <h1 style={{ color: '#d63384' }}>Dashboard แอดมิน - GLAZED JADE</h1>
         <div style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '10px' }}>
